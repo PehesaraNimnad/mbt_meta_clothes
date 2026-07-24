@@ -3,9 +3,9 @@ MBT.Debug = false
 
 MBT.Language = "EN"
 
-MBT.Framework = "OX" -- OX/ESX/QB
+MBT.Framework = "QB" -- OX/ESX/QB
 
-MBT.MenuKey = "J"
+MBT.MenuKey = "Y"
 
 MBT.Labels = {
     ["IT"] = {
@@ -22,6 +22,7 @@ MBT.Labels = {
         ["t_shirt"] = "TShirt",
         ["jacket"] = "Giacca",
         ["watch"] = "Orologio",
+        ["mask"] = "Maschera",
         ["sett_name"] = "Menú Vestiti"
     },
     ["EN"] = {
@@ -38,17 +39,30 @@ MBT.Labels = {
         ["t_shirt"] = "TShirt",
         ["jacket"] = "Jacket",
         ["watch"] = "Watch",
+        ["mask"] = "Mask",
         ["sett_name"] = "Clothes Menu"
     },
 }
 
 MBT.Drawables = {
+    [1] = {
+        ["Label"] = MBT.Labels[MBT.Language]["mask"],
+        ["Default"] = {
+            ["male"] = { 0 },   -- 0 = no mask on the base freemode models; check your own default skins/masks if you use custom ones
+            ["female"] = { 0 }
+        },
+        ["Animation"] = { ["Dict"] = "clothingspecs", ["Anim"] = "take_off", ["Flag"] = 51, ["Duration"] = 1400 },
+        ["Item"] = "mask"
+    },
     [3] = {
         ["Label"] = MBT.Labels[MBT.Language]["arms"],
         ["Default"] = {
             ["male"] = { 15 },
             ["female"] = { 15 }
-        }
+        },
+        ["Animation"] = { ["Dict"] = "clothingshirt", ["Anim"] = "try_shirt_positive_d", ["Flag"] = 51,
+            ["Duration"] = 1200 },
+        ["Item"] = "arms"
     },
     [4] = {
         ["Label"] = MBT.Labels[MBT.Language]["legs"],
@@ -84,7 +98,8 @@ MBT.Drawables = {
             ["female"] = { 15 }
         },
         ["Animation"] = { ["Dict"] = "clothingshirt", ["Anim"] = "try_shirt_positive_d", ["Flag"] = 51,
-            ["Duration"] = 1200 }
+            ["Duration"] = 1200 },
+        ["Item"] = "tshirt"
     },
     [11] = {
         ["Label"] = MBT.Labels[MBT.Language]["jacket"],
