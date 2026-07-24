@@ -101,3 +101,61 @@ th,
 td {
   position: absolute;
 }
+
+.torso-popup {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(20, 20, 20, 0.96);
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 14px;
+  min-width: 200px;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.torso-popup.show {
+  display: flex;
+}
+
+.torso-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #f0f0f0;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.torso-popup-close {
+  cursor: pointer;
+  color: #999;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.torso-popup-close:hover {
+  color: #fff;
+}
+
+.torso-popup button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #444;
+  color: #e0e0e0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: "Oswald", sans-serif;
+  font-size: 14px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.torso-popup button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: #777;
+}
