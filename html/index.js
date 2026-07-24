@@ -39,6 +39,19 @@ $(function() {
       }
   };
 
+  handleTorsoClick = function() {
+      $("#torso-popup").addClass("show");
+  };
+
+  closeTorsoPopup = function() {
+      $("#torso-popup").removeClass("show");
+  };
+
+  handleTorsoOption = function(index) {
+      closeTorsoPopup();
+      handleUndress(index);
+  };
+
   handleProps = function(index) {
       if (!isUiBusy) {
           isUiBusy = true;
