@@ -23,31 +23,18 @@ RegisterNetEvent('mbt_metaclothes:giveDress', function(data)
     local _source = source
     local xPlayer = (MBT.Framework == "OX" and Ox.GetPlayer(_source)) or (MBT.Framework == "ESX" and ESX.GetPlayerFromId(_source)) or (MBT.Framework == "QB" and QBCore.Functions.GetPlayer(_source))
     if xPlayer then
-        local playerIdentity = (MBT.Framework == "OX" and xPlayer.name) or (MBT.Framework == "ESX" and xPlayer.getName()) or (MBT.Framework == "QB" and xPlayer.PlayerData.name) 
-        ox_inventory:AddItem(_source, data.Item, 1 , {description = currLang["clothes_desc"]:format(playerIdentity), index = data.Index, sex = data.Sex, drawable = data.Drawable, texture = data.Texture, palette = data.Palette})
-    end
-end)
+        local playerIdentity = (MBT.Framework == "OX" and xPlayer.name) or (MBT.Framework == "ESX" and xPlayer.getName()) or (MBT.Framework == "QB" and xPlayer.PlayerData.name)
+        local metadata = {description = currLang["clothes_desc"]:format(playerIdentity), index = data.Index, sex = data.Sex, drawable = data.Drawable, texture = data.Texture, palette = data.Palette}
 
-RegisterNetEvent('mbt_metaclothes:giveDressKit', function(data)
-    local _source = source
-    local xPlayer = (MBT.Framework == "OX" and Ox.GetPlayer(_source)) or (MBT.Framework == "ESX" and ESX.GetPlayerFromId(_source)) or (MBT.Framework == "QB" and QBCore.Functions.GetPlayer(_source))
-
-    if xPlayer then
-        local playerIdentity = (MBT.Framework == "OX" and xPlayer.name) or (MBT.Framework == "ESX" and xPlayer.getName()) or (MBT.Framework == "QB" and xPlayer.PlayerData.name) 
-        local metadata = {description = currLang["clothes_desc"]:format(playerIdentity), sex = data.Sex}
-
-        for k,v in pairs(data.Kit) do
-            metadata[tostring(k)] = {}
-            metadata[tostring(k)]["index"] = v.Index
-            metadata[tostring(k)]["drawable"] = v.Drawable
-            metadata[tostring(k)]["texture"]  = v.Texture
-            metadata[tostring(k)]["palette"]  = v.Palette
+        local image = GetClothingCdnImage(data.Sex, 'component', data.Index, data.Drawable)
+        if image then
+            metadata.imageurl = image
+        elseif MBT.Debug then
+            print(('^3[mbt_meta_clothes]^0 No CDN image for %s/%s/%s (item: %s) — falling back to the default item icon'):format(data.Sex, data.Index, data.Drawable, data.Item))
         end
 
-        Wait(100)
         ox_inventory:AddItem(_source, data.Item, 1, metadata)
     end
-
 end)
 
 RegisterNetEvent('mbt_metaclothes:giveProp', function(data)
@@ -57,7 +44,16 @@ RegisterNetEvent('mbt_metaclothes:giveProp', function(data)
 
     if xPlayer then
         local playerIdentity = (MBT.Framework == "OX" and xPlayer.name) or (MBT.Framework == "ESX" and xPlayer.getName()) or (MBT.Framework == "QB" and xPlayer.PlayerData.name) 
-        ox_inventory:AddItem(_source, data.Item, 1 , {description = currLang["props_desc"]:format(playerIdentity), index = data.Index, sex = data.Sex, drawable = data.Drawable, texture = data.Texture})
+        local metadata = {description = currLang["props_desc"]:format(playerIdentity), index = data.Index, sex = data.Sex, drawable = data.Drawable, texture = data.Texture}
+
+        local image = GetClothingCdnImage(data.Sex, 'prop', data.Index, data.Drawable)
+        if image then
+            metadata.imageurl = image
+        elseif MBT.Debug then
+            print(('^3[mbt_meta_clothes]^0 No CDN image for %s/prop_%s/%s (item: %s) — falling back to the default item icon'):format(data.Sex, data.Index, data.Drawable, data.Item))
+        end
+
+        ox_inventory:AddItem(_source, data.Item, 1, metadata)
     end
 
 end)
