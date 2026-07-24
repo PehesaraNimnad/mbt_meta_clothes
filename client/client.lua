@@ -49,7 +49,7 @@ AddEventHandler('onResourceStart', function(resourceName)
 end)
 
 RegisterNUICallback('handleDress', function(data, cb)
-    if data.Index == 8 then handleTorsoUndress() else handleUndress(data.Index) end
+    handleUndress(data.Index)
     saveOutfitCache()
     cb(1)
 end)
@@ -71,54 +71,22 @@ AddEventHandler('mbt_metaclothes:applyDress', function(data)
     saveOutfitCache() 
 end)
 
-RegisterNetEvent('mbt_metaclothes:applyKitDress')
-AddEventHandler('mbt_metaclothes:applyKitDress', function(data)
-    for k,v in pairs(data) do
-        SetPedComponentVariation(cache.ped or PlayerPedId(), v.index, v.drawable, v.texture, v.palette)
-        saveOutfitCache()  
-    end
-end)
-
 RegisterNetEvent('mbt_metaclothes:applyProps')
 AddEventHandler('mbt_metaclothes:applyProps', function(data)
     SetPedPropIndex(cache.ped or PlayerPedId(), data.index, data.drawable, data.texture, true)
     saveOutfitCache()  
 end)
 
-function handleTopDress(data)
-    local canWear = true
-
-    for k,v in pairs(data.index) do
-        if type(v) == "table" and k ~= "Arms" then
-            if not tableContainsValue({table = MBT[data.type][v.index]["Default"][data.pedSex], value = playerWearing["Drawables"][v.index]}) then
-                canWear = false
-                break
-            end
-        end
-    end
-
-    return canWear
-end
-
 RegisterNetEvent('mbt_metaclothes:checkDress')
 AddEventHandler('mbt_metaclothes:checkDress', function(data)
     data.pedSex = data.sex == "m" and "male" or "female"
-    local currentTopDress = {}
-    local isDefault = true
 
     updatePlayerClothes()
 
-    if type(data.index) =="table" and data.index["Arms"] then
-        isDefault = handleTopDress(data)
-    else
-        assert(MBT[data.type][data.index]["Default"][data.pedSex] and type(MBT[data.type][data.index]["Default"][data.pedSex]) == "table", "Invalid value or wrong type for key " ..data.index)
-        
-        if not tableContainsValue({table = MBT[data.type][data.index]["Default"][data.pedSex], value = playerWearing[data.type][data.index]}) then
-            isDefault = false
-        end
-    
-    end
-    
+    assert(MBT[data.type][data.index]["Default"] and type(MBT[data.type][data.index]["Default"][data.pedSex]) == "table", "Invalid value or wrong type for key " ..data.index)
+
+    local isDefault = tableContainsValue({table = MBT[data.type][data.index]["Default"][data.pedSex], value = playerWearing[data.type][data.index]})
+
     assert(data.cb ,"The callback does not exist or is not a function, check your item declaration")
 
     data.cb(isDefault)
@@ -175,63 +143,6 @@ function handleProps(propIndex)
     SendNUIMessage({action = "sendUiState", status = false})
 end
 
-function handleTorsoUndress()
-    local playerSex = getPedSex(cache.ped or PlayerPedId())
-
-    local topDressData = {
-        Item = "topdress",
-        Sex = playerSex,
-        Kit = {
-            Arms = {
-                Index = 3,
-                Drawable = GetPedDrawableVariation(cache.ped or PlayerPedId(), 3),
-                Texture  = GetPedTextureVariation(cache.ped or PlayerPedId(), 3),
-                Palette =  GetPedPaletteVariation(cache.ped or PlayerPedId(), 3)
-            },
-            Tshirt = {
-                Index = 8,
-                Drawable = GetPedDrawableVariation(cache.ped or PlayerPedId(), 8),
-                Texture  = GetPedTextureVariation(cache.ped or PlayerPedId(), 8),
-                Palette =  GetPedPaletteVariation(cache.ped or PlayerPedId(), 8),
-                isAnimated = true
-            },
-            Jacket = {
-                Index = 11,
-                Drawable = GetPedDrawableVariation(cache.ped or PlayerPedId(), 11),
-                Texture  = GetPedTextureVariation(cache.ped or PlayerPedId(), 11),
-                Palette =  GetPedPaletteVariation(cache.ped or PlayerPedId(), 11)
-            }
-        }
-    }
-
-    if isAbleToUndress({Type = "Drawables", Index = topDressData["Kit"]["Tshirt"]["Index"], Drawable = topDressData["Kit"]["Tshirt"]["Drawable"]}) then
-
-        setDefaultVariation({
-            isAnimated = true,
-            Player = cache.ped or PlayerPedId(),
-            Sex = playerSex,
-            Index = topDressData["Kit"]["Tshirt"]["Index"]
-        })
-        setDefaultVariation({
-            isAnimated = false,
-            Player = cache.ped or PlayerPedId(),
-            Sex = playerSex,
-            Index = topDressData["Kit"]["Arms"]["Index"]
-        })
-        setDefaultVariation({
-            isAnimated = false,
-            Player = cache.ped or PlayerPedId(),
-            Sex = playerSex,
-            Index = topDressData["Kit"]["Jacket"]["Index"]
-        })
-      
-        TriggerServerEvent("mbt_metaclothes:giveDressKit", topDressData)
-    else
-        MBT.NotifyHandler(currLang["nothing_to_unwear"], "error")  
-    end
-    SendNUIMessage({action = "sendUiState", status = false})
-end
-
 function handleUndress(dressIndex)
     local playerSex = getPedSex(cache.ped or PlayerPedId()) 
     local currentDrawable = GetPedDrawableVariation(cache.ped or PlayerPedId(), dressIndex)
@@ -265,14 +176,7 @@ function isAbleToUndress(data)
     
     if isTable(MBT[data.Type][data.Index]["Default"][playerSex]) then
         if isWearingDefault then
-            if data.Index == 8 then
-                local currentJacket = {Index = 11, Drawable = GetPedDrawableVariation(cache.ped or PlayerPedId(), 11)}
-                if tableContainsValue({table = MBT[data.Type][currentJacket.Index]["Default"][playerSex], value = currentJacket.Drawable}) then -- Jacket?
-                    isAble = false
-                end
-            else
-                isAble = false
-            end
+            isAble = false
         end
     end
     return isAble 
