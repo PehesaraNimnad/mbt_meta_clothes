@@ -48,7 +48,7 @@ MBT.Drawables = {
     [1] = {
         ["Label"] = MBT.Labels[MBT.Language]["mask"],
         ["Default"] = {
-            ["male"] = { 0 },   -- 0 = no mask on the base freemode models; check your own default skins/masks if you use custom ones
+            ["male"] = { 0 },   
             ["female"] = { 0 }
         },
         ["Animation"] = { ["Dict"] = "clothingspecs", ["Anim"] = "take_off", ["Flag"] = 51, ["Duration"] = 1400 },
@@ -89,7 +89,7 @@ MBT.Drawables = {
             ["female"] = { 0 }
         },
         ["Animation"] = { ["Dict"] = "clothingtie", ["Anim"] = "try_tie_positive_a", ["Flag"] = 0, ["Duration"] = 2500 },
-        ["Item"] = "chain"
+        ["Item"] = "chaincloth"
     },
     [8] = {
         ["Label"] = MBT.Labels[MBT.Language]["t_shirt"],
@@ -107,6 +107,8 @@ MBT.Drawables = {
             ["male"] = { 15 },
             ["female"] = { 15 }
         },
+        ["Animation"] = { ["Dict"] = "clothingshirt", ["Anim"] = "try_shirt_positive_d", ["Flag"] = 51,
+            ["Duration"] = 1200 },
         ["Item"] = "jacket"
     }
 }
