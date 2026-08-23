@@ -124,7 +124,7 @@ function handleProps(propIndex)
     local propData = {
         Item = MBT.Props[propIndex]["Item"],
         Index = propIndex,
-        Sex = playerSex,
+        Sex = sexToShort(playerSex),
         Drawable = currentProp,
         Texture  = GetPedPropTextureIndex(cache.ped or PlayerPedId(), propIndex)
     }
@@ -149,7 +149,7 @@ function handleUndress(dressIndex)
     local dressData = {
         Item = MBT.Drawables[dressIndex]["Item"],
         Index = dressIndex,
-        Sex = playerSex,
+        Sex = sexToShort(playerSex),
         Drawable = currentDrawable,
         Texture  = GetPedTextureVariation(cache.ped or PlayerPedId(), dressIndex),
         Palette =  GetPedPaletteVariation(cache.ped or PlayerPedId(), dressIndex)
@@ -187,12 +187,15 @@ function setDefaultVariation(data)
     if isTable(MBT.Drawables[data.Index]["Default"][data.Sex]) then
         drawable = randomizeDress(MBT.Drawables[data.Index]["Default"][data.Sex])
     end
-    if data.isAnimated then
+
+    local animData = MBT.Drawables[data.Index]["Animation"]
+
+    if data.isAnimated and animData then
         playEmote({
-            Dict = MBT.Drawables[data.Index]["Animation"]["Dict"],
-            Anim = MBT.Drawables[data.Index]["Animation"]["Anim"],
-            Flag = MBT.Drawables[data.Index]["Animation"]["Flag"],
-            Dur = MBT.Drawables[data.Index]["Animation"]["Duration"]
+            Dict = animData["Dict"],
+            Anim = animData["Anim"],
+            Flag = animData["Flag"],
+            Dur = animData["Duration"]
         }, function()
             SetPedComponentVariation(data.Player, data.Index, drawable, 0, 0)
         end)
@@ -201,13 +204,16 @@ function setDefaultVariation(data)
     end
 end
 
+
 function setDefaultPropVariation (data)
-    if data.isAnimated then
+    local animData = MBT.Props[data.Index]["Animation"]
+
+    if data.isAnimated and animData then
         playEmote({
-            Dict = MBT.Props[data.Index]["Animation"]["Dict"],
-            Anim = MBT.Props[data.Index]["Animation"]["Anim"],
-            Flag = MBT.Props[data.Index]["Animation"]["Flag"],
-            Dur = MBT.Props[data.Index]["Animation"]["Duration"]
+            Dict = animData["Dict"],
+            Anim = animData["Anim"],
+            Flag = animData["Flag"],
+            Dur = animData["Duration"]
         }, function()
             ClearPedProp(data.Player, data.Index)
         end)
@@ -230,7 +236,29 @@ function randomizeDress(t)
     return t[math.random(1, #t)]
 end
 
+function sexToShort(sex)
+    if sex == "male" then
+        return "m"
+    elseif sex == "female" then
+        return "f"
+    else
+        return sex
+    end
+end
+
 function getPedSex(ped)
+
+    if MBT.Framework == 'QB' and QBCore then
+        local ok, playerData = pcall(function() return QBCore.Functions.GetPlayerData() end)
+        if ok and playerData and playerData.charinfo and playerData.charinfo.gender ~= nil then
+            if playerData.charinfo.gender == 0 then
+                return "male"
+            elseif playerData.charinfo.gender == 1 then
+                return "female"
+            end
+        end
+    end
+
     local maleModel, femaleModel = `mp_m_freemode_01`, `mp_f_freemode_01`
     local playerModel = GetEntityModel(ped)
     if playerModel then
@@ -315,4 +343,3 @@ if MBT.Debug then
     end, false)
    
 end
-
